@@ -1,6 +1,7 @@
 package br.com.forum_hub.controller;
 
 import br.com.forum_hub.domain.autenticacao.DadosLogin;
+import br.com.forum_hub.domain.autenticacao.TokenResponse;
 import br.com.forum_hub.domain.autenticacao.TokenService;
 import br.com.forum_hub.usuario.Usuario;
 import jakarta.validation.Valid;
@@ -26,11 +27,11 @@ public class AutenticacaoController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> efetuarLogin(@Valid @RequestBody DadosLogin dados){
+    public ResponseEntity<TokenResponse> efetuarLogin(@Valid @RequestBody DadosLogin dados){
         var authToken = new UsernamePasswordAuthenticationToken(dados.email(),dados.password());
         var authentication = authenticationManager.authenticate(authToken);
-        String tokenAcesso = tokenService.gerarToken((Usuario) authentication.getPrincipal());
-        return ResponseEntity.ok(tokenAcesso);
+        String token = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+        return ResponseEntity.ok(new TokenResponse(token));
     }
 
 }
