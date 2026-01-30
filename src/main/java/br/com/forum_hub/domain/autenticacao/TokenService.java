@@ -49,4 +49,18 @@ public class TokenService {
         }
     }
 
+    public String gerarRefreshToken(Usuario usuario) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256("12345678");
+            return JWT.create()
+                    .withIssuer("Refresh Token")
+                    .withSubject(usuario.getId().toString())
+                    .withExpiresAt(expiracao(120))
+                    .sign(algorithm);
+        } catch (JWTCreationException exception){
+            throw new RegraDeNegocioException("Erro ao gerar token JWT");
+        }
+    }
+
+
 }
