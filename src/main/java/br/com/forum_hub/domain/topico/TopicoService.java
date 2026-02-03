@@ -2,6 +2,7 @@ package br.com.forum_hub.domain.topico;
 
 import br.com.forum_hub.domain.curso.CursoService;
 import br.com.forum_hub.infra.exception.RegraDeNegocioException;
+import br.com.forum_hub.usuario.Usuario;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,9 +21,9 @@ public class TopicoService {
     }
 
     @Transactional
-    public Topico cadastrar(DadosCadastroTopico dados) {
+    public Topico cadastrar(DadosCadastroTopico dados, Usuario autor) {
         var curso = cursoService.buscarPeloId(dados.cursoId());
-        var topico = new Topico(dados, curso);
+        var topico = new Topico(dados, curso, autor);
         return repository.save(topico);
     }
     public Page<DadosListagemTopico> listar(String categoria, Long idCurso, Boolean semResposta, Boolean solucionados, Pageable paginacao) {

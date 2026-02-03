@@ -1,6 +1,7 @@
 package br.com.forum_hub.usuario;
 
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,6 +30,15 @@ public class Usuario implements UserDetails {
         this.nomeCompleto = nomeCompleto;
         this.email = email;
         this.senha = senha;
+    }
+
+    public Usuario(@Valid DadosCadastroUsuario dados, String senhaCriptografada) {
+        this.email = dados.email();
+        this.senha = senhaCriptografada;
+        this.nomeCompleto = dados.nomeCompleto();
+        this.nomeUsuario = dados.nomeUsuario();
+        this.miniBiografia = dados.miniBiografia();
+        this.biografia = dados.biografia();
     }
 
     @Override
