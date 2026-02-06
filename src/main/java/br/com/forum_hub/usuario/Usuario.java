@@ -1,13 +1,16 @@
 package br.com.forum_hub.usuario;
 
+import br.com.forum_hub.infra.exception.RegraDeNegocioException;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 @Entity
 @Table(name="usuarios")
@@ -22,6 +25,9 @@ public class Usuario implements UserDetails {
     private String nomeUsuario;
     private String biografia;
     private String miniBiografia;
+    private Boolean verificado;
+    private String token;
+    private LocalDateTime expiracaoToken;
 
     public Usuario() {
     }
@@ -39,6 +45,9 @@ public class Usuario implements UserDetails {
         this.nomeUsuario = dados.nomeUsuario();
         this.miniBiografia = dados.miniBiografia();
         this.biografia = dados.biografia();
+        this.verificado = false;
+        this.token = UUID.randomUUID().toString();
+        this.expiracaoToken = LocalDateTime.now().plusMinutes(30);
     }
 
     @Override
@@ -95,5 +104,18 @@ public class Usuario implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void verificar() {
+        if(expiracaoToken.isBefore(LocalDateTime.now())){
+            throw new RegraDeNegocioException("Link de Verificação expirou !");
+        }
+        this.verificado = true;
+        this.token = null;
+        this.expiracaoToken = null;
     }
 }
