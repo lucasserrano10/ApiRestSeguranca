@@ -118,4 +118,18 @@ public class Usuario implements UserDetails {
         this.token = null;
         this.expiracaoToken = null;
     }
+
+    public Usuario alterarDados(@Valid DadosEdicaoUsuario dados) {
+        if(dados.nomeUsuario() != null){
+            this.nomeUsuario = dados.nomeUsuario();
+        }
+        if(dados.miniBiografia() != null){
+            this.miniBiografia = dados.miniBiografia();
+        }
+        if(dados.biografia() != null){
+            this.biografia = dados.biografia();
+        }
+
+        return this;
+    }
 }

@@ -2,10 +2,7 @@ package br.com.forum_hub.controller;
 
 import br.com.forum_hub.domain.topico.DadosCadastroTopico;
 import br.com.forum_hub.domain.topico.DadosListagemTopico;
-import br.com.forum_hub.usuario.DadosCadastroUsuario;
-import br.com.forum_hub.usuario.DadosListagemUsuario;
-import br.com.forum_hub.usuario.Usuario;
-import br.com.forum_hub.usuario.UsuarioService;
+import br.com.forum_hub.usuario.*;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,4 +32,15 @@ public class UsuarioController {
         return ResponseEntity.ok("Conta verificada com sucesso !");
     }
 
+    @GetMapping("/{nomeUsuario}")
+    public ResponseEntity<DadosListagemUsuario> buscarUsuario(@PathVariable String nomeUsuario){
+        var usuario = usuarioService.buscarPorNomeUsuario(nomeUsuario);
+        return ResponseEntity.ok(new DadosListagemUsuario(usuario.getId(), usuario.getNomeUsuario(), usuario.getNomeCompleto(), usuario.getNomeUsuario(), usuario.getMiniBiografia(), usuario.getBiografia()));
+    }
+
+    @PutMapping("/editarPerfil")
+    public ResponseEntity<DadosListagemUsuario> edicaoPerfil(@RequestBody @Valid DadosEdicaoUsuario dados, @AuthenticationPrincipal Usuario logado){
+        var usuario = usuarioService.editarPerfil(dados,logado);
+        return ResponseEntity.ok(new DadosListagemUsuario(usuario.getId(), usuario.getNomeUsuario(), usuario.getNomeCompleto(), usuario.getNomeUsuario(), usuario.getMiniBiografia(), usuario.getBiografia()));
+    }
 }

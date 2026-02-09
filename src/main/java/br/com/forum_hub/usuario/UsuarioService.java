@@ -1,6 +1,7 @@
 package br.com.forum_hub.usuario;
 
 import br.com.forum_hub.infra.email.EmailService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +32,11 @@ public class UsuarioService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("O usuário não foi encontrado!"));
     }
 
+    public Usuario buscarPorNomeUsuario(String nomeUsuario) {
+        return usuarioRepository.findByNomeUsuario(nomeUsuario)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+    }
+
     @Transactional
     public Usuario cadastrar(@Valid DadosCadastroUsuario dados) {
         var senhaCriptografada = passwordEncoder.encode(dados.senha());
@@ -44,5 +50,9 @@ public class UsuarioService implements UserDetailsService {
     public void verificarEmail(String codigo) {
         var usuario = usuarioRepository.findByToken(codigo).orElseThrow();
         usuario.verificar();
+    }
+
+    public Usuario editarPerfil(@Valid DadosEdicaoUsuario dados, Usuario logado) {
+        return logado.alterarDados(dados);
     }
 }
