@@ -43,4 +43,16 @@ public class UsuarioController {
         var usuario = usuarioService.editarPerfil(dados,logado);
         return ResponseEntity.ok(new DadosListagemUsuario(usuario.getId(), usuario.getNomeUsuario(), usuario.getNomeCompleto(), usuario.getNomeUsuario(), usuario.getMiniBiografia(), usuario.getBiografia()));
     }
+
+    @PatchMapping("/alterar-senha")
+    public ResponseEntity<Void> alterarSenha(@RequestBody @Valid DadosAlteracaoSenha dados, @AuthenticationPrincipal Usuario logado){
+        usuarioService.alterarSenha(dados,logado);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/desativar")
+    public ResponseEntity<Void> desativarUsuario(@AuthenticationPrincipal Usuario logado){
+        usuarioService.desativarUsuario(logado);
+        return ResponseEntity.noContent().build();
+    }
 }

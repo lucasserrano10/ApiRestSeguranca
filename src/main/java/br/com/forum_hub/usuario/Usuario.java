@@ -1,5 +1,7 @@
 package br.com.forum_hub.usuario;
 
+import br.com.forum_hub.domain.perfil.Perfil;
+import br.com.forum_hub.domain.perfil.PerfilNome;
 import br.com.forum_hub.infra.exception.RegraDeNegocioException;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -10,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +31,12 @@ public class Usuario implements UserDetails {
     private Boolean verificado;
     private String token;
     private LocalDateTime expiracaoToken;
+    private Boolean ativo;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usuarios_perfis",
+    joinColumns = @JoinColumn(name = "usuario_id"),
+    inverseJoinColumns = @JoinColumn(name = "perfil_id"))
+    private List<Perfil> perfis;
 
     public Usuario() {
     }
@@ -38,7 +47,7 @@ public class Usuario implements UserDetails {
         this.senha = senha;
     }
 
-    public Usuario(@Valid DadosCadastroUsuario dados, String senhaCriptografada) {
+    public Usuario(@Valid DadosCadastroUsuario dados, String senhaCriptografada, Perfil perfil) {
         this.email = dados.email();
         this.senha = senhaCriptografada;
         this.nomeCompleto = dados.nomeCompleto();
@@ -48,12 +57,13 @@ public class Usuario implements UserDetails {
         this.verificado = false;
         this.token = UUID.randomUUID().toString();
         this.expiracaoToken = LocalDateTime.now().plusMinutes(30);
+        this.ativo = false;
+        this.perfis.add(perfil);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // NÃO pode retornar null
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        return perfis;
     }
 
     public Long getId() {
@@ -131,5 +141,13 @@ public class Usuario implements UserDetails {
         }
 
         return this;
+    }
+
+    public void alterarSenha(String novaSenhaCriptografada) {
+        this.senha = novaSenhaCriptografada;
+    }
+
+    public void desativar() {
+        this.ativo = false;
     }
 }
