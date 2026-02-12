@@ -1,5 +1,6 @@
 package br.com.forum_hub.controller;
 
+import br.com.forum_hub.domain.perfil.DadosPerfil;
 import br.com.forum_hub.domain.topico.DadosCadastroTopico;
 import br.com.forum_hub.domain.topico.DadosListagemTopico;
 import br.com.forum_hub.usuario.*;
@@ -54,5 +55,11 @@ public class UsuarioController {
     public ResponseEntity<Void> desativarUsuario(@AuthenticationPrincipal Usuario logado){
         usuarioService.desativarUsuario(logado);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("adicionar-perfil/{id}")
+    public ResponseEntity<DadosListagemUsuario> adicionarPerfil(@PathVariable Long id, @RequestBody @Valid DadosPerfil dados){
+        var usuario = usuarioService.adicionarPerfil(id,dados);
+        return ResponseEntity.ok(new DadosListagemUsuario(usuario.getId(), usuario.getNomeUsuario(), usuario.getNomeCompleto(), usuario.getNomeUsuario(), usuario.getMiniBiografia(), usuario.getBiografia()));
     }
 }

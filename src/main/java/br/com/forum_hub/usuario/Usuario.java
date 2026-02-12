@@ -10,10 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Table(name="usuarios")
@@ -36,7 +33,7 @@ public class Usuario implements UserDetails {
     @JoinTable(name = "usuarios_perfis",
     joinColumns = @JoinColumn(name = "usuario_id"),
     inverseJoinColumns = @JoinColumn(name = "perfil_id"))
-    private List<Perfil> perfis;
+    private List<Perfil> perfis = new ArrayList<>();
 
     public Usuario() {
     }
@@ -149,5 +146,9 @@ public class Usuario implements UserDetails {
 
     public void desativar() {
         this.ativo = false;
+    }
+
+    public void adicionarPerfil(Perfil perfil) {
+        this.perfis.add(perfil);
     }
 }

@@ -1,5 +1,6 @@
 package br.com.forum_hub.usuario;
 
+import br.com.forum_hub.domain.perfil.DadosPerfil;
 import br.com.forum_hub.domain.perfil.PerfilNome;
 import br.com.forum_hub.domain.perfil.PerfilRepository;
 import br.com.forum_hub.infra.email.EmailService;
@@ -48,7 +49,7 @@ public class UsuarioService implements UserDetailsService {
         var senhaCriptografada = passwordEncoder.encode(dados.senha());
         var perfil = perfilRepository.findByNome(PerfilNome.ESTUDANTE);
         var usuario = new Usuario(dados, senhaCriptografada, perfil);
-        emailService.enviarEmailVerificacao(usuario);
+//        emailService.enviarEmailVerificacao(usuario);
         usuarioRepository.save(usuario);
         return usuarioRepository.save(usuario);
     }
@@ -79,5 +80,14 @@ public class UsuarioService implements UserDetailsService {
 
     public void desativarUsuario(Usuario logado) {
         logado.desativar();
+    }
+
+    @Transactional
+    public Usuario adicionarPerfil(Long id, DadosPerfil dados){
+        var usuario = usuarioRepository.findById(id).orElseThrow();
+        var perfil = perfilRepository.findByNome(dados.perfilNome());
+        usuario.adicionarPerfil(perfil);
+
+        return usuario;
     }
 }
